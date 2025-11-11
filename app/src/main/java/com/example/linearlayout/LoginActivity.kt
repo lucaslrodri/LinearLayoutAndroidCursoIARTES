@@ -56,14 +56,20 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                 if (emailText.isNotEmpty() && passwordText.isNotEmpty()) {
                     // Prossegue para fazer o processo de login
                     // ::class.java -> Referencia
-                    val intent = Intent(this, HomeActivity::class.java)
-                    val bundle = Bundle()
-                    bundle.putString("EMAIL_KEY", emailText)
+                    if (database.isLoginValid(emailText, passwordText)){
+                        val intent = Intent(this, HomeActivity::class.java)
+                        val bundle = Bundle()
+                        bundle.putString("EMAIL_KEY", emailText)
 //                    bundle.putString("PASSWORD_KEY", passwordText)
-                    intent.putExtras(bundle)
-                    //intent.putExtra("EMAIL_KEY", emailText)
-                    //intent.putExtra("PASSWORD_KEY", passwordText)
-                    startActivity(intent)
+                        intent.putExtras(bundle)
+                        //intent.putExtra("EMAIL_KEY", emailText)
+                        //intent.putExtra("PASSWORD_KEY", passwordText)
+                        startActivity(intent)
+                    }else{
+                        Toast.makeText(this, "Email e/ou password invalidos", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
                 } else {
                     // Mandar um alerta...
                     // Primeiro parâmetro -> Contexto:
@@ -75,6 +81,7 @@ class LoginActivity : AppCompatActivity(), View.OnClickListener {
                     // - Short
                     // - Long
                     Toast.makeText(this, R.string.login_empty_field, Toast.LENGTH_SHORT).show()
+                    return
                 }
             }
         }

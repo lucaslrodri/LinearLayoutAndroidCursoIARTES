@@ -2,6 +2,7 @@ package com.example.linearlayout.database
 
 import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
@@ -59,7 +60,36 @@ class BancoDeDadosHelper(context: Context) : SQLiteOpenHelper(
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
-        TODO("Not yet implemented")
+        db?.execSQL("DROP TABLE IF EXISTS $TABLE_USERS")
+        onCreate(db)
+//        if (oldVersion < newVersion) {
+//
+//            // Aqui você pode adicionar scripts de migração, se necessário
+//        }
+    }
+
+    fun isLoginValid(email: String, password: String): Boolean {
+        val db = this.readableDatabase
+        val selection = "$COLUMN_EMAIL = ? AND $COLUMN_PASSWORD = ?"
+        val sectionArgs = arrayOf(email, password)
+
+        // Consulta segura para evitar SQL Injection
+        // Cursor é um ponteiro para o resultado da consulta
+        val cursor: Cursor = db.query(
+            TABLE_USERS,
+            arrayOf(COLUMN_ID),
+            selection,
+            sectionArgs,
+            null,
+            null,
+            null
+        )
+        // Fazendo operação com o cursor
+        val isValid = cursor.count > 0
+        // Fechando o cursor para liberar recursos
+        cursor.close()
+        db.close()
+        return isValid
     }
 
     fun insertUser(email: String, password: String): Long {
